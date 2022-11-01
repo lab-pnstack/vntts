@@ -1,3 +1,12 @@
 gdown
-# git+https://github.com/NTT123/vietTTS.git@demo
 gradio==3.0.2
+praatio>=5.0
+tqdm
+pyyaml
+librosa
+requests
+colorama
+biopython
+dataclassy
+sqlalchemy
+ansiwrap

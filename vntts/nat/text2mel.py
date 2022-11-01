@@ -57,7 +57,13 @@ def text2tokens(text, lexicon_fn):
     tokens.append(FLAGS.sil_index)  # silence
     return tokens
 
-
+""" 
+Here is the explanation for the code above:
+1. In the first part of the code, we load the latest checkpoint and extract the parameters, auxilary variables, and rng variables.
+2. The forward function is a hk.transform_with_state function. It is a function that takes in the parameters, auxilary variables, and rng variables as input and returns the model outputs.
+3. The predict_fn is a jitted function. The jax.jit function compiles the forward function which is a hk.transform_with_state function. The static_argnums argument is used to specify the input arguments that are not trainable parameters. We can also use the static_argnames argument to specify the names of the input arguments that are not trainable parameters.
+4. The predict_fn function takes in the parameters, auxilary variables, and rng variables as input and returns the model outputs. 
+"""
 def predict_mel(tokens, durations):
     ckpt_fn = FLAGS.ckpt_dir / "acoustic_latest_ckpt.pickle"
     with open(ckpt_fn, "rb") as f:

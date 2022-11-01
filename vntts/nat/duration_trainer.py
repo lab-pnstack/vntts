@@ -37,7 +37,15 @@ def loss_fn(params, aux, rng, x: DurationInput, is_training=True):
     loss = jnp.sum(masked_loss) / jnp.sum(mask)
     return loss, aux
 
-
+""" 
+Here is the explanation for the code above:
+1. `jax.jit` is a decorator to compile a Python function to a fast, native 
+executable on XLA, which is the JIT compiler for JAX.
+2. `hk.transform_with_state` is a function to create a `Transform` instance 
+from `DurationModel`'s `__call__` method. `Transform` is a class in Haiku 
+which contains the logic for transforming a function into a module.
+3. `apply` is a method in `Transform` to apply the function to the inputs. 
+"""
 forward_fn = jax.jit(
     hk.transform_with_state(lambda x: DurationModel(is_training=False)(x)).apply
 )
@@ -52,12 +60,25 @@ val_loss_fn = jax.jit(partial(loss_fn, is_training=False))
 
 loss_vag = jax.value_and_grad(loss_fn, has_aux=True)
 
+
+""" 
+Here is the explanation for the code above:
+1. optax.clip_by_global_norm() is used to clip the gradient by a maximum norm.
+2. optax.adamw() is the optimizer we use, which is Adam with weight decay. 
+"""
 optimizer = optax.chain(
     optax.clip_by_global_norm(FLAGS.max_grad_norm),
     optax.adamw(FLAGS.duration_learning_rate, weight_decay=FLAGS.weight_decay),
 )
 
 
+""" 
+Here is the explanation for the code above:
+1. We split the random number generator into two, one for the loss function and one for the optimizer.
+2. We compute the loss and gradients.
+3. We update the parameters and the optimizer state.
+4. We apply the updates to the parameters. 
+"""
 @jax.jit
 def update(params, aux, rng, optim_state, inputs: DurationInput):
     rng, new_rng = jax.random.split(rng)
